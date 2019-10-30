@@ -1,0 +1,132 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'jacoco'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'io.codearte.nexus-staging' version '0.11.0'
+    id 'com.gradle.build-scan' version '2.4.2'
+//    id "com.github.hierynomus.license" version "0.15.0"
+}
+
+apply plugin: 'com.bmuschko.nexus'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+group 'ru.oleg-cherednik.ping'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+mainClassName = 'unknown'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+configurations {
+    jar.archiveName = "ping-${version}.jar"
+}
+
+dependencies {
+    implementation 'ru.oleg-cherednik.icoman:icon-manager:1.0'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'ch.qos.logback:logback-core:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'commons-cli:commons-cli:1.4'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'commons-lang:commons-lang:2.6'
+    implementation 'org.apache.commons:commons-collections4:4.3'
+
+    annotationProcessor("org.projectlombok:lombok:1.18.8")
+
+    testImplementation 'org.testng:testng:6.14.3'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
+    testImplementation 'org.projectlombok:lombok:1.16.18'
+    testImplementation 'net.sf.sevenzipjbinding:sevenzipjbinding:9.20-2.00beta'
+    testImplementation 'net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms:9.20-2.00beta'
+    testImplementation 'net.lingala.zip4j:zip4j:2.2.1'
+    testImplementation 'de.idyl:winzipaes:1.0.1'
+    testImplementation 'org.mockito:mockito-core:3.0.0'
+
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.8")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+test {
+    useTestNG()
+}
+
+//license {
+//    header = file('license_header.txt')
+//    include "**/*.java"
+//    exclude "**/*Test.java"
+//}
+
+modifyPom {
+    project {
+        name 'ping'
+        description 'Zip files support for JDK application'
+        url 'https://github.com/oleg-cherednik/ping'
+        inceptionYear '2019'
+
+        scm {
+            url 'https://github.com/oleg-cherednik/ping'
+            connection 'scm:https://github.com/oleg-cherednik/ping.git'
+            developerConnection 'scm:git@github.com:oleg-cherednik/ping.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'oleg.cherednik'
+                name 'Oleg Cherednik'
+                email 'oleg.cherednik@gmail.com'
+            }
+        }
+    }
+}
+
+extraArchive {
+    sources true
+    tests true
+    javadoc true
+}
+
+nexus {
+    sign true
+    repositoryUrl 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+    snapshotRepositoryUrl 'https://oss.sonatype.org/content/repositories/snapshots'
+}
+
+nexusStaging {
+    packageGroup 'ru.oleg-cherednik'
+    stagingProfileId 'D3835BF60F05B9'
+}
