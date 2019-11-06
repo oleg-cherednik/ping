@@ -5,7 +5,6 @@ import ru.olegcherednik.icoman.IconManager;
 import ru.olegcherednik.icoman.exceptions.IconManagerException;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -126,7 +125,7 @@ public class Ping implements ActionListener {
 
     private static Image createImage(String id) throws IconManagerException, IOException {
         IconFile iconFile = IconManager.getInstance().getIconFile(id);
-        return new ImageIcon(iconFile.getImage(iconFile.getIds().iterator().next())).getImage();
+        return iconFile.getImage(iconFile.getIds().iterator().next());
     }
 
     @Override
@@ -164,8 +163,8 @@ public class Ping implements ActionListener {
 
         private void checkStatus() {
             try {
-//                    URL url = new URL("http://trialingutil.exp-design-stage.apps.usae-2.syngentaaws.org/health");
-                URL url = new URL("http://localhost:8081/health");
+                    URL url = new URL("http://trialingutil.exp-design-stage.apps.usae-2.syngentaaws.org/health");
+//                URL url = new URL("http://localhost:8081/health");
                 HttpURLConnection con = (HttpURLConnection)url.openConnection();
                 con.setRequestMethod("GET");
                 con.setConnectTimeout(connectTimeout);
